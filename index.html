@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paraglider AeroSim v3</title>
+    <script src="script.js" defer></script>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="panel">
+            <h2>Flight Parameters</h2>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Projected Span (m)</span>
+                    <input type="number" id="span-num" class="num-input" min="6" max="14" step="0.1" value="9.0">
+                </div>
+                <input type="range" id="span" min="6" max="14" step="0.1" value="9.0">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Projected Root Chord (m)</span>
+                    <input type="number" id="chord-num" class="num-input" min="1.5" max="3.5" step="0.1" value="2.5">
+                </div>
+                <input type="range" id="chord" min="1.5" max="3.5" step="0.1" value="2.5">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Taper Ratio (Tip / Root)</span>
+                    <input type="number" id="taper-num" class="num-input" min="0.3" max="1.0" step="0.05" value="0.70">
+                </div>
+                <input type="range" id="taper" min="0.3" max="1.0" step="0.05" value="0.70">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span id="aoa-label">Trim Angle of Attack <span id="aoa-auto"
+                            class="auto-indicator">(Auto-Controlled)</span></span>
+                    <input type="number" id="aoa-num" class="num-input" min="-2" max="12" step="0.5" value="6.0">
+                </div>
+                <input type="range" id="aoa" min="-2" max="12" step="0.5" value="6.0">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Brake Applied (%)</span>
+                    <input type="number" id="brake-num" class="num-input" min="0" max="100" step="1" value="0">
+                </div>
+                <input type="range" id="brake" min="0" max="100" step="1" value="0">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Altitude (m)</span>
+                    <input type="number" id="alt-num" class="num-input" min="0" max="5000" step="50" value="1000">
+                </div>
+                <input type="range" id="alt" min="0" max="5000" step="50" value="1000">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Temperature (°C)</span>
+                    <input type="number" id="temp-num" class="num-input" min="-20" max="40" step="1" value="15">
+                </div>
+                <input type="range" id="temp" min="-20" max="40" step="1" value="15">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Pilot + Harness Mass (kg)</span>
+                    <input type="number" id="mass-num" class="num-input" min="50" max="140" step="1" value="85">
+                </div>
+                <input type="range" id="mass" min="50" max="140" step="1" value="85">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Pilot Frontal Area (m²)</span>
+                    <input type="number" id="pilotArea-num" class="num-input" min="0.1" max="0.8" step="0.05"
+                        value="0.40">
+                </div>
+                <input type="range" id="pilotArea" min="0.1" max="0.8" step="0.05" value="0.40">
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Telemetry & Aerodynamics</h2>
+            <div class="output-grid">
+                <div class="output-box">
+                    <div class="output-label">Tapered Area</div>
+                    <div class="output-value"><span id="out-area">0</span> m²</div>
+                </div>
+                <div class="output-box">
+                    <div class="output-label">Aspect Ratio</div>
+                    <div class="output-value"><span id="out-ar">0</span></div>
+                </div>
+                <div class="output-box">
+                    <div class="output-label">Air Density</div>
+                    <div class="output-value"><span id="out-rho">0</span> kg/m³</div>
+                </div>
+                <div class="output-box">
+                    <div class="output-label">Effective AoA</div>
+                    <div class="output-value"><span id="out-eff-aoa">0</span>°</div>
+                </div>
+                <div class="output-box" style="border-color: #a6e3a1;">
+                    <div class="output-label">Airspeed</div>
+                    <div class="output-value"><span id="out-speed">0</span> km/h</div>
+                </div>
+                <div class="output-box" style="border-color: #a6e3a1;">
+                    <div class="output-label">Glide Ratio (L/D)</div>
+                    <div class="output-value"><span id="out-gr">0</span> : 1</div>
+                </div>
+                <div class="output-box" style="border-color: #a6e3a1; grid-column: span 2;">
+                    <div class="output-label">Sink Rate</div>
+                    <div class="output-value"><span id="out-sink">0</span> m/s</div>
+                </div>
+            </div>
+            <div id="stall-warning" class="warning"></div>
+        </div>
+
+        <div class="panel full-width">
+            <h2>Understanding the Parameters</h2>
+            <div class="glossary-grid">
+                <div>
+                    <h3>Input Definitions</h3>
+                    <div class="glossary-item">
+                        <strong>Projected Span & Root Chord</strong>
+                        The dimensions of the wing as it appears when fully inflated and flying (like the shadow it
+                        casts on the ground). This is different from the "flat" dimensions of the unrolled fabric.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Taper Ratio</strong>
+                        The ratio of the wingtip chord to the center (root) chord. Modern paragliders are tapered
+                        (elliptical) to reduce induced drag at the wingtips. A ratio of 1.0 is a perfect rectangle; 0.5
+                        means the tips are half as wide as the center.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Trim Angle of Attack (AoA)</strong>
+                        The pitch angle of the wing relative to the oncoming air. In flight, you adjust this using the
+                        speed bar (which pitches the nose down, lowering AoA) or by releasing the trimmers.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Brake Applied</strong>
+                        Pulling the brake toggles curls the trailing edge of the wing downwards. This massively
+                        increases aerodynamic drag and forces the nose up, increasing your effective Angle of Attack
+                        until you eventually stall.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Altitude & Temperature</strong>
+                        These define the atmosphere. Higher altitudes and hotter temperatures result in thinner, less
+                        dense air. The glider must fly faster through thin air to generate the required lift to support
+                        your weight.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Pilot Mass & Frontal Area</strong>
+                        Total suspended weight (you + harness) dictates how fast gravity pulls you through the air. The
+                        frontal area represents your aerodynamic footprint. A bulky seated harness (high area) creates
+                        much more parasitic drag than a sleek, aerodynamic pod harness.
+                    </div>
+                </div>
+                <div>
+                    <h3>Telemetry Outputs</h3>
+                    <div class="glossary-item">
+                        <strong>Tapered Area & Aspect Ratio</strong>
+                        The mathematical lifting surface of the glider. Aspect Ratio (Span squared divided by Area)
+                        describes how "long and skinny" the wing is. High aspect ratios glide much better but are more
+                        demanding to fly.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Air Density ($\rho$)</strong>
+                        Calculated from your altitude and temperature inputs using standard atmospheric physics.
+                        Measured in kilograms per cubic meter.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Effective AoA</strong>
+                        Your true Angle of Attack. If you pull the brakes, this number automatically increases past your
+                        baseline trim, indicating how dangerously close to the critical stall angle (usually around
+                        12°-15°) you are.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Airspeed</strong>
+                        The true velocity of the paraglider moving through the air mass along its downward flight path.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Glide Ratio (L/D)</strong>
+                        The ratio of Lift to Drag. A glide ratio of 8.5:1 means that in zero wind, you will glide 8.5
+                        meters forward for every 1 meter of altitude you lose.
+                    </div>
+                    <div class="glossary-item">
+                        <strong>Sink Rate</strong>
+                        Your vertical velocity towards the ground. Paraglider pilots strive to keep this number as low
+                        as possible to stay in the air longer.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
